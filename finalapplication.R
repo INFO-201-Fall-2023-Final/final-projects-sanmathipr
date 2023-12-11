@@ -4,6 +4,7 @@ library(stringr)
 library(ggplot2)
 library(shiny)
 library(plotly)
+library(rsconnect)
 
 df <- read.csv("df.csv")
 
@@ -187,15 +188,24 @@ server_page4 <- function(input, output, session) {
 
 
 ui_page5 <- fluidPage(
-  titlePanel("About Page"),
-  sidebarLayout(
-    sidebarPanel(
-      # Add sidebar content for Page 5
-    ),
-    mainPanel(
-      # Add main content for Page 5
-      h2("Welcome to Page 5"),
-      # Add additional UI components
+  mainPanel(
+    div(class = "container text-center",
+        h2("About: A Summary of the Project"),
+        h3("What We Learned"),
+        h4("Our journey begins with the acknowledgment that the intersection of mental health and climate has been a subject of global interest among psychologists. While not everyone may be susceptible to mental health issues related to climate change, research suggests that extreme weather events can lead to emotions such as depression, anger, and even violence (APHA). The consequences extend to self-harm, substance abuse, and suicidal ideation, making it a critical issue deserving of attention."),
+        h4("Natural disasters, exacerbated by the current trend of global warming, are catalysts for immense pain and loss. As we witness rapid changes in the atmosphere, oceans, cryosphere, and biosphere, it becomes crucial to recognize the potential rise in mental health consequences (NASA). The urgency is emphasized by the United Nations' statement that we have only a limited time to prevent irreversible damage from climate change. If unaddressed, mental health problems may escalate in tandem with the worsening climate crisis."),   
+        h4("It is easy to overlook these issues from a third-party perspective, but mental health is a fundamental human right crucial to personal, community, and socio-economic development (WHO). If climate change is indeed linked to the rise in mental health issues, empathetic consideration becomes imperative. This project aims to uncover the relationship between extreme climate events and mental health, with the hope that our findings will contribute to potential solutions and prevention tactics."),
+        h4("Navigate through our exploration pages to delve deeper into specific aspects of the project:"),
+        h4("1. Location and Mental Health Data: Analyzing the connection between location and mental health data."),
+        h4("2. Mental Health Across States: Investigating variations in mental health treatment across states, highlighting disparities in access to care." ),
+        h4("3.High-Risk Areas for Natural Disasters: Examining the impact of climate change on the mental health of individuals residing in high-risk areas for natural disasters. "),
+        img(src = "https://www.neefusa.org/sites/default/files/vulnerable%20populations.png", width = 800, height = 600),
+        h4("The graphic above shows some important issues pertinent to mental health--low income families are at risk of being in shelters 
+           during natural disasters. Communities of color in high risk areas can face larger amounts of air pollution. The elderly are
+           at risk during events that may require potential evacuation. These issues also cause extreme disparity, and can often be worse
+           for those who are less privileged."),
+        h4("To learn more about the connection between mental health and weather, follow this link: "),
+        a("Link to more info", href = "https://enlightenedsolutions.com/5-ways-the-weather-can-affect-your-mental-health/#:~:text=One%20of%20the%20biggest%20ways,an%20actual%20episode%20of%20depression."),
     )
   )
 )
@@ -209,7 +219,7 @@ ui <- navbarPage(
   tabPanel("Connecting Stormy Weather and Mental Health", ui_page2),
   tabPanel("Interactive Page 2", ui_page3),
   tabPanel("Interactive Page 3", ui_page4),
-  tabPanel("About Page", ui_page5)
+  tabPanel("About Page: A Summary of the Project", ui_page5)
 )
 
 server <- function(input, output, session) {
@@ -223,5 +233,7 @@ server <- function(input, output, session) {
 }
 
 
+# Run the Shiny App
+shinyApp(ui, server)
 # Run the Shiny App
 shinyApp(ui, server)
