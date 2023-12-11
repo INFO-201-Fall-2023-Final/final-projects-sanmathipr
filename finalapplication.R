@@ -22,7 +22,7 @@ server_page1 <- function(input, output, session) {
 
 
 ui_page2 <- fluidPage(
-  titlePanel("Page 2"),
+  titlePanel("Interactive Page 1"),
   sidebarLayout(
     sidebarPanel(
       # Add sidebar content for Page 2
@@ -40,11 +40,77 @@ server_page2 <- function(input, output, session) {
   # Add server logic for Page 2
 }
 
+ui_page3 <- fluidPage(
+  titlePanel("Interactive Page 2"),
+  sidebarLayout(
+    sidebarPanel(
+      # Add sidebar content for Page 3
+    ),
+    mainPanel(
+      # Add main content for Page 3
+      h2("Welcome to Page 3"),
+      # Add additional UI components
+    )
+  )
+)
+
+ui_page4 <- fluidPage(
+  titlePanel("Interactive Page 3"),
+  sidebarLayout(
+    sidebarPanel(
+      # Add sidebar content for Page 4
+    ),
+    mainPanel(
+      # Add main content for Page 4
+      h2("Welcome to Page 4"),
+      # Add additional UI components
+    )
+  )
+)
+
+
+ui_page5 <- fluidPage(
+  titlePanel("Scrollytelling"),
+  sidebarLayout(
+    sidebarPanel(
+      # Add sidebar content for Page 5
+    ),
+    mainPanel(
+      # Add main content for Page 5
+      h2("Welcome to Page 5"),
+      # Add additional UI components
+    )
+  )
+)
+
+ui_page6 <- fluidPage(
+  titlePanel("About Page"),
+  sidebarLayout(
+    sidebarPanel(
+      # Add sidebar content for Page 6
+    ),
+    mainPanel(
+      # Add main content for Page 6
+      h2("Welcome to Page 6"),
+      # Add additional UI components
+    )
+  )
+)
+
+# Define server logic for the second page
+server_page2 <- function(input, output, session) {
+  # Add server logic for Page 2
+}
+
 # Combine UI and server functions for the entire application
 ui <- navbarPage(
   "Shiny App",
   tabPanel("Introduction", ui_page1),
-  tabPanel("Page 2", ui_page2)
+  tabPanel("Interactive Page 1", ui_page2),
+  tabPanel("Interactive Page 2", ui_page3),
+  tabPanel("Interactive Page 3", ui_page4),
+  tabPanel("Scrollytelling", ui_page5),
+  tabPanel("About Page", ui_page6)
 )
 
 server <- function(input, output, session) {
