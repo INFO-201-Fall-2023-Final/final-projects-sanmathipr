@@ -81,7 +81,7 @@ server_page2 <- function(input, output, session) {
     aggregated_data1 <- arrange(collected_data(), desc(n))
     
     plot_ly(data = aggregated_data1, x = ~State, y = ~n, type = "scatter", mode = "markers",
-            text = ~n, marker = list(color = ~n, colorscale = 'Greens'),
+            text = ~n, marker = list(color = ~n, colorscale = 'Reds'),
             layout = list(xaxis = list(title = "State"), yaxis = list(title = "Storms")))
   })
   
@@ -101,7 +101,7 @@ server_page2 <- function(input, output, session) {
 ui_page3 <- fluidPage(
   titlePanel("Mental Health Across States"),
   br(),
-  p("There is a variation of mental health treatment across states and some people are able to receive treatment
+  p("There is a disparity of mental health treatment across states and some people are able to receive treatment
     while others are not. This is data that is important to understand in order to find connections between weather
     patterns and those who need help across different states. The variation in who is able to receive treatment and 
     who is not is also an important distinction, and the variance between states is indicative of how mental health
@@ -119,8 +119,14 @@ ui_page3 <- fluidPage(
       )
     ),
     mainPanel(
-      plotOutput(outputId = "bar")
-    )
+      plotOutput(outputId = "bar"),
+      p("The geographic variance in mental health treatment availability serves as a microcosm of broader societal challenges. This data is not just a collection of statistics; it is a reflection of systemic inequities that permeate our nation. The disparities go beyond mere numbers—they represent the lived experiences of individuals grappling with mental health concerns, highlighting the critical intersection of healthcare accessibility, regional demographics, and the prevailing attitudes toward mental health."),
+      p("This page serves as a gateway to a deeper understanding of mental health treatment disparities across states. Through an interactive interface, you can select a specific state and delve into the nuanced landscape of mental health accessibility. The data presented here is not merely a reflection of numbers—it is a call to action, prompting us to consider the broader societal implications of mental health disparities and their potential ties to weather patterns.
+      Join us in unraveling the intricate threads that weave together the disparities in mental health treatment across the United States, as we strive to shed light on the path toward a more equitable and compassionate future."),
+      h4("To learn about the rankings of mental health per state, follow this link: "),
+      a("Link to more info", href = "https://www.forbes.com/advisor/health-insurance/worst-states-for-mental-health-care/"),
+      
+      )
   )
 )
 server_page3 <- function(input, output, session) {
@@ -217,7 +223,7 @@ ui <- navbarPage(
   "Shiny App",
   tabPanel("Introduction", ui_page1),
   tabPanel("Connecting Stormy Weather and Mental Health", ui_page2),
-  tabPanel("Interactive Page 2", ui_page3),
+  tabPanel("Mental Health Across States", ui_page3),
   tabPanel("Interactive Page 3", ui_page4),
   tabPanel("About Page: A Summary of the Project", ui_page5)
 )
@@ -233,7 +239,5 @@ server <- function(input, output, session) {
 }
 
 
-# Run the Shiny App
-shinyApp(ui, server)
 # Run the Shiny App
 shinyApp(ui, server)
