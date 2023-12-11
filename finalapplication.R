@@ -92,14 +92,14 @@ server_page2 <- function(input, output, session) {
 
 server_page3 <- function(input, output, session) {
   filtered_df <- reactive({df[df$State == input$state_name, ]})
-  output$bar <- renderPlot({
+    output$bar <- renderPlot({
     req(nrow(filtered_df()) > 0, "filtered_df is empty")
     
-    prescription <- sum(str_detect(filtered_df()$Indicator, regex("prescription", ignore_case = TRUE)))
-    untreated <- sum(str_detect(filtered_df()$Indicator, regex("did not get", ignore_case = TRUE)))
-    either_received <- sum(str_detect(filtered_df()$Indicator, regex("Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
-    therapy <- sum(str_detect(filtered_df()$Indicator, regex("Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
-    unknown <- sum(!str_detect(filtered_df()$Indicator, regex("prescription|did not get|Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks|Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
+    prescription <- sum(filtered_df()$Value[str_detect(filtered_df()$Indicator, regex("prescription", ignore_case = TRUE))])
+    untreated <- sum(filtered_df()$Value[str_detect(filtered_df()$Indicator, regex("did not get", ignore_case = TRUE))])
+    either_received <- sum(filtered_df()$Value[str_detect(filtered_df()$Indicator, regex("Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE))])
+    therapy <- sum(filtered_df()$Value[str_detect(filtered_df()$Indicator, regex("Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE))])
+    unknown <- sum(filtered_df()$Value[!str_detect(filtered_df()$Indicator, regex("prescription|did not get|Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks|Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE))])
     
     chart_data <- data.frame(
       category = c("Prescription", "Untreated", "Either Received", "Therapy", "Unknown"),
