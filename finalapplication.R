@@ -166,7 +166,8 @@ ui_page4 <- fluidPage(
   textInput(inputId = "user_state",
             label = "Which state do you live in?"),
   textOutput("results"),
-  tableOutput("table")
+  tableOutput("table"),
+  textOutput("variation_statement")
 )
 
 server_page4 <- function(input, output, session) {
@@ -187,6 +188,14 @@ server_page4 <- function(input, output, session) {
   
   output$table <- renderTable({
     head(storm_data()$table, 3)
+  })
+
+  output$variation_statement <- renderText({
+    paste("The data above will reflect where your state aligns when certain conditions are met. If your state was not within a high risk region, that does not mean that you are not affected
+          by climate change. If your state doesn't have additional insight into the experienced disasters, but was still within the high risk region, remain cautious. The variation in different states ability to provide treatment for the mental health of the public in combination with the analysis
+          of which states are heavily affected by climate change is telling about the value that citizens should be placing on mental health
+          treatment. We hope that after you consider the insight provided by the connection between mental health treatment and an increase in natural disasters
+          in the United States, you will understand the importance of mental health regulation in a time that the climate is unstable. Thank you for considering our evaluation!")
   })
 }
 
