@@ -20,7 +20,7 @@ ui_page1 <- fluidPage(
         h4("From a third party perspective, it can be easy to push these problems aside, especially if one is not dealing with mental health issues themselves. But one must also be empathetic to the fact that “mental health is a basic human right [that is] crucial to personal, community, and socio-economic development,” meaning it directly affects the world when people are suffering with these issues (WHO). If mental health is associated with climate change, and if these extreme disasters are possibly the direct cause of the increase in mental issues, it is important to find ways to mitigate this problem. Knowing that mental health and climate change are associated with one another can help with finding potential solutions for this problem, and helping those who might be affected by natural disasters. This project is based on finding out if there is a relationship that clearly exists between extreme climate change and mental health, in hopes that there can be solutions and prevention tactics created in the case that a connection does lie between these two different sets of data."),
         h4("To learn more about the connection between mental health and weather, follow this link: "),
         a("Link to more info", href = "https://enlightenedsolutions.com/5-ways-the-weather-can-affect-your-mental-health/#:~:text=One%20of%20the%20biggest%20ways,an%20actual%20episode%20of%20depression."),
-        )
+    )
   )
 )
 server_page1 <- function(input, output, session) {
@@ -126,7 +126,7 @@ ui_page3 <- fluidPage(
       h4("To learn about the rankings of mental health per state, follow this link: "),
       a("Link to more info", href = "https://www.forbes.com/advisor/health-insurance/worst-states-for-mental-health-care/"),
       
-      )
+    )
   )
 )
 server_page3 <- function(input, output, session) {
@@ -161,7 +161,8 @@ ui_page4 <- fluidPage(
   br(),
   p("Due to an increase in natural disaster as a result of climate change, more and more people in the United States are put
     at risk of being victims of a storm. This endangers the mental health of all the people who are in high-risk areas for natural 
-    disasters to strike. This page is for you to learn whether or not you would be in a high-risk area in recent years."),
+    disasters to strike. This page is for you to learn whether or not you would be in a high-risk area in recent year, and explains the 
+    different events that have occured in your state in terms of natural disasters."),
   br(),
   textInput(inputId = "user_state",
             label = "Which state do you live in?"),
@@ -172,10 +173,12 @@ ui_page4 <- fluidPage(
 
 server_page4 <- function(input, output, session) {
   storm_data <- reactive({
-    just_storms <- df[is.na(df$Subgroup) == TRUE, ]
+    just_storms <- df[is.na(df$Subgroup), ]
     user_state <- toupper(input$user_state)
-    if (user_state %in% toupper(just_storms$State)) {
-      table <- just_storms[just_storms$State == input$user_state, c("EVENT_NARRATIVE", "EPISODE_NARRATIVE", "State", "EVENT_TYPE")]
+    just_storms$State <- toupper(just_storms$State)
+    
+    if (user_state %in% just_storms$State) {
+      table <- just_storms[just_storms$State == user_state, c("EVENT_NARRATIVE", "EPISODE_NARRATIVE", "State", "EVENT_TYPE")]
       return(list(results = "Unfortunately, your state is a high-risk state in recent years. Be cautious, and make sure you are taking care of your mental health. Below is additional insight into the storms your state has experienced.", table = table))
     } else {
       return(list(results = "Congratulations! Your state is not a high-risk state according to recent data on natural disasters. This doesn't mean that you should forgo mental health maintenance. Take care of yourself! Below is some insight into other natural disasters within different states.", table = just_storms))
@@ -189,7 +192,7 @@ server_page4 <- function(input, output, session) {
   output$table <- renderTable({
     head(storm_data()$table, 3)
   })
-
+  
   output$variation_statement <- renderText({
     paste("The data above will reflect where your state aligns when certain conditions are met. If your state was not within a high risk region, that does not mean that you are not affected
           by climate change. If your state doesn't have additional insight into the experienced disasters, but was still within the high risk region, remain cautious. The variation in different states ability to provide treatment for the mental health of the public in combination with the analysis
@@ -241,7 +244,7 @@ ui <- navbarPage(
 )
 
 server <- function(input, output, session) {
- server_page2(input,output,session)
+  server_page2(input,output,session)
   observe({
     if (!is.null(input$state_name) && input$state_name != "") {
       server_page3(input, output, session)
