@@ -83,35 +83,6 @@ ui_page4 <- fluidPage(
   )
 )
 
-
-ui_page5 <- fluidPage(
-  titlePanel("Scrollytelling"),
-  sidebarLayout(
-    sidebarPanel(
-      # Add sidebar content for Page 5
-    ),
-    mainPanel(
-      # Add main content for Page 5
-      h2("Welcome to Page 5"),
-      # Add additional UI components
-    )
-  )
-)
-
-ui_page6 <- fluidPage(
-  titlePanel("About Page"),
-  sidebarLayout(
-    sidebarPanel(
-      # Add sidebar content for Page 6
-    ),
-    mainPanel(
-      # Add main content for Page 6
-      h2("Welcome to Page 6"),
-      # Add additional UI components
-    )
-  )
-)
-
 # Define server logic for the second page
 server_page2 <- function(input, output, session) {
   # Add server logic for Page 2
@@ -149,9 +120,7 @@ ui <- navbarPage(
   tabPanel("Introduction", ui_page1),
   tabPanel("Interactive Page 1", ui_page2),
   tabPanel("Interactive Page 2", ui_page3),
-  tabPanel("Interactive Page 3", ui_page4),
-  tabPanel("Scrollytelling", ui_page5),
-  tabPanel("About Page", ui_page6)
+  tabPanel("Interactive Page 3", ui_page4)
 )
 
 server <- function(input, output, session) {
