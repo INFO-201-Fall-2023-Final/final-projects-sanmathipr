@@ -3,6 +3,8 @@ library(ggplot2)
 library(plotly)
 library(stringr)
 
+df <- read.csv("df.csv")
+
 ui_page1 <- fluidPage(
   mainPanel(
     # Center-aligned main content for Page 1
