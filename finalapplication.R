@@ -218,7 +218,7 @@ ui_page5 <- fluidPage(
 
 
 
-# Combine UI and server functions for the entire application
+
 ui <- navbarPage(
   "Shiny App",
   tabPanel("Introduction", ui_page1),
@@ -239,5 +239,4 @@ server <- function(input, output, session) {
 }
 
 
-# Run the Shiny App
 shinyApp(ui, server)
