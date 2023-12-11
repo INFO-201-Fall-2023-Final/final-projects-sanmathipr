@@ -224,7 +224,7 @@ ui <- navbarPage(
   tabPanel("Introduction", ui_page1),
   tabPanel("Connecting Stormy Weather and Mental Health", ui_page2),
   tabPanel("Mental Health Across States", ui_page3),
-  tabPanel("Interactive Page 3", ui_page4),
+  tabPanel("Assessing Your Risk", ui_page4),
   tabPanel("About Page: A Summary of the Project", ui_page5)
 )
 
