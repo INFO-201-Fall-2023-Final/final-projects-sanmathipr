@@ -1,4 +1,7 @@
 library(shiny)
+library(ggplot2)
+library(plotly)
+library(stringr)
 
 ui_page1 <- fluidPage(
   mainPanel(
@@ -41,17 +44,29 @@ server_page2 <- function(input, output, session) {
 }
 
 ui_page3 <- fluidPage(
-  titlePanel("Interactive Page 2"),
+  titlePanel("Mental Health Across States"),
+  br(),
+  p("There is a variation of mental health treatment across states and some people are able to receive treatment
+    while others are not. This is data that is important to understand in order to find connections between weather
+    patterns and those who need help across different states. The variation in who is able to receive treatment and 
+    who is not is also an important distinction, and the variance between states is indicative of how mental health
+    is viewed across the United States."),
+  br(),
+  p("Of all of the states that were examined, 1683 were patients that were unable to 
+    receieve treatment despite needing it. This page will let you explore treatement by state further."),
+  br(),
   sidebarLayout(
-    sidebarPanel(
-      # Add sidebar content for Page 3
-    ),
-    mainPanel(
-      # Add main content for Page 3
-      h2("Welcome to Page 3"),
-      # Add additional UI components
+    sidebarPanel (
+      selectInput(
+        inputId = "state_name",
+        label = "Choose a state",
+        choices = c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming")
     )
+  ),
+  mainPanel(
+    plotOutput(outputId = "bar")
   )
+)
 )
 
 ui_page4 <- fluidPage(
@@ -102,6 +117,32 @@ server_page2 <- function(input, output, session) {
   # Add server logic for Page 2
 }
 
+server_page3 <- function(input, output, session) {
+  filtered_df <- reactive({df[df$State == input$state_name, ]})
+  output$bar <- renderPlot({
+    req(nrow(filtered_df()) > 0, "filtered_df is empty")
+    
+    prescription <- sum(str_detect(filtered_df()$Indicator, regex("prescription", ignore_case = TRUE)))
+    untreated <- sum(str_detect(filtered_df()$Indicator, regex("did not get", ignore_case = TRUE)))
+    either_received <- sum(str_detect(filtered_df()$Indicator, regex("Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
+    therapy <- sum(str_detect(filtered_df()$Indicator, regex("Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
+    unknown <- sum(!str_detect(filtered_df()$Indicator, regex("prescription|did not get|Took Prescription Medication for Mental Health And/Or Received Counseling or Therapy, Last 4 Weeks|Received Counseling or Therapy, Last 4 Weeks", ignore_case = TRUE)))
+    
+    chart_data <- data.frame(
+      category = c("Prescription", "Untreated", "Either Received", "Therapy", "Unknown"),
+      count = c(prescription, untreated, either_received, therapy, unknown)
+    )
+    
+    p <- ggplot(chart_data, aes(x = category, y = count, fill = category)) +
+      geom_bar(stat = "identity") +
+      labs(title = "Counts of Each Category",
+           x = "Category",
+           y = "Count") +
+      theme_minimal()
+    return(p)
+  })
+}
+
 # Combine UI and server functions for the entire application
 ui <- navbarPage(
   "Shiny App",
@@ -114,7 +155,11 @@ ui <- navbarPage(
 )
 
 server <- function(input, output, session) {
-  # Empty server function for the entire application
+  observe({
+    if (!is.null(input$state_name) && input$state_name != "") {
+      server_page3(input, output, session)
+    }
+  })
 }
 
 # Run the Shiny App
