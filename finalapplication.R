@@ -174,7 +174,7 @@ server_page4 <- function(input, output, session) {
     just_storms <- df[is.na(df$Subgroup) == TRUE, ]
     user_state <- toupper(input$user_state)
     if (user_state %in% toupper(just_storms$State)) {
-      table <- just_storms[just_storms$State == input$user_state, ]
+      table <- just_storms[just_storms$State == input$user_state, c("EVENT_NARRATIVE", "EPISODE_NARRATIVE", "State", "EVENT_TYPE")]
       return(list(results = "Unfortunately, your state is a high-risk state in recent years. Be cautious, and make sure you are taking care of your mental health. Below is additional insight into the storms your state has experienced.", table = table))
     } else {
       return(list(results = "Congratulations! Your state is not a high-risk state according to recent data on natural disasters. This doesn't mean that you should forgo mental health maintenance. Take care of yourself! Below is some insight into other natural disasters within different states.", table = just_storms))
@@ -186,7 +186,7 @@ server_page4 <- function(input, output, session) {
   })
   
   output$table <- renderTable({
-    storm_data()$table
+    head(storm_data()$table, 3)
   })
 }
 
