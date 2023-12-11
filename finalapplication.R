@@ -1,13 +1,14 @@
 library(shiny)
-library(ggplot2)
-library(plotly)
+library(dplyr)
 library(stringr)
+library(ggplot2)
+library(shiny)
+library(plotly)
 
 df <- read.csv("df.csv")
 
 ui_page1 <- fluidPage(
   mainPanel(
-    # Center-aligned main content for Page 1
     div(class = "container text-center",
         h2("Introduction"),
         h3("Exploring the Connection Between Storm Data and Mental Health"),
@@ -26,24 +27,75 @@ server_page1 <- function(input, output, session) {
 
 
 
-ui_page2 <- fluidPage(
-  titlePanel("Interactive Page 1"),
-  sidebarLayout(
-    sidebarPanel(
-      # Add sidebar content for Page 2
-    ),
-    mainPanel(
-      # Add main content for Page 2
-      h2("Welcome to Page 2"),
-      # Add additional UI components
-    )
+ui_page2 <- fluidPage(   
+  mainPanel(
+    class = "container text-center",
+    h2("Connecting Stormy Weather and Mental Health"),
+    h4("To understand the connection between storm data and mental health, it made sense to first understand the relationship between 
+       location and mental health. This could then be compared to the relationship between location and stormy weather, ultimately detailing what stormy weather and mental health have in common."),
+    h4("The interactive plot below details the relationship between location and mental health. It shows how many mental health cases 
+       have been reported per state. It is important to take into account that this may also be reliant on how this data was collected and from
+       where. You can interact with the plot by hovering over a certain data point, which will show you the name of the specific state 
+       along with the count (n) of mental health cases."),
+    plotlyOutput("scatter"),
+    h4("As you can see, some states like Texas and Alabama have high mental health counts, while states like Wisconsin and District
+       of Columbia have low mental health counts. Now we can plot the weather disasters in states to see the relationship between storms
+       and location, with n representing the number of weather disasters per state."),
+    plotlyOutput("scatter2"),
+    h4("We can already see that there may be a connection between mental health and location, seeing as Texas is one of the highest states for both
+       charts. If you need to see the storm data with more specificity, enter a state and find out how many storms have occured in that area."),
+    textInput("state_input", "Enter State:"),
+    textOutput("y_values_output")
   )
 )
 
-# Define server logic for the second page
 server_page2 <- function(input, output, session) {
-  # Add server logic for Page 2
+  df$State <- as.factor(df$State)
+  
+  collected_data <- reactive({
+    state_source_counts <- count(df, State, EVENT_NARRATIVE)
+    state_source_counts <- arrange(state_source_counts, desc(n))
+    state_source_counts <- state_source_counts[state_source_counts$n != 132, ]
+    collected_data <- state_source_counts %>%
+      group_by(State) %>%
+      summarize(n = sum(n))
+    arrange(collected_data, desc(n))
+  })
+  
+  output$scatter <- renderPlotly({
+    state_counts <- count(df, State)
+    state_counts <- arrange(state_counts, desc(n))
+    
+    plot_data_df <- state_counts
+    plot_data_df$State <- reorder(plot_data_df$State, -plot_data_df$n)
+    
+    plot_ly(data = plot_data_df, x = ~State, y = ~n, type = "scatter", mode = "markers",
+            text = ~n, marker = list(color = ~n),
+            layout = list(xaxis = list(title = "State"), yaxis = list(title = "Count")))
+  })
+  
+  output$scatter2 <- renderPlotly({
+    df$State <- as.factor(df$State)
+    
+    aggregated_data1 <- arrange(collected_data(), desc(n))
+    
+    plot_ly(data = aggregated_data1, x = ~State, y = ~n, type = "scatter", mode = "markers",
+            text = ~n, marker = list(color = ~n, colorscale = 'Greens'),
+            layout = list(xaxis = list(title = "State"), yaxis = list(title = "Storms")))
+  })
+  
+  output$y_values_output <- renderText({
+    entered_state <- tolower(input$state_input)  
+    
+    storms_value <- collected_data()[tolower(collected_data()$State) == entered_state, "n"]
+    
+    paste(" Storms: ", storms_value)
+  })
 }
+
+
+
+
 
 ui_page3 <- fluidPage(
   titlePanel("Mental Health Across States"),
@@ -63,35 +115,16 @@ ui_page3 <- fluidPage(
         inputId = "state_name",
         label = "Choose a state",
         choices = c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming")
+      )
+    ),
+    mainPanel(
+      plotOutput(outputId = "bar")
     )
-  ),
-  mainPanel(
-    plotOutput(outputId = "bar")
   )
 )
-)
-
-ui_page4 <- fluidPage(
-  titlePanel("Assessing Your Risk"),
-  br(),
-  p("Due to an increase in natural disaster as a result of climate change, more and more people in the United States are put
-    at risk of being victims of a storm. This endangers the mental health of all the people who are in high-risk areas for natural 
-    disasters to strike. This page is for you to learn whether or not you would be in a high-risk area in recent years."),
-  br(),
-  textInput(inputId = "user_state",
-            label = "Which state do you live in?"),
-  textOutput("results"),
-  tableOutput("table")
-)
-
-# Define server logic for the second page
-server_page2 <- function(input, output, session) {
-  # Add server logic for Page 2
-}
-
 server_page3 <- function(input, output, session) {
   filtered_df <- reactive({df[df$State == input$state_name, ]})
-    output$bar <- renderPlot({
+  output$bar <- renderPlot({
     req(nrow(filtered_df()) > 0, "filtered_df is empty")
     
     prescription <- sum(filtered_df()$Value[str_detect(filtered_df()$Indicator, regex("prescription", ignore_case = TRUE))])
@@ -115,6 +148,20 @@ server_page3 <- function(input, output, session) {
   })
 }
 
+
+ui_page4 <- fluidPage(
+  titlePanel("Assessing Your Risk"),
+  br(),
+  p("Due to an increase in natural disaster as a result of climate change, more and more people in the United States are put
+    at risk of being victims of a storm. This endangers the mental health of all the people who are in high-risk areas for natural 
+    disasters to strike. This page is for you to learn whether or not you would be in a high-risk area in recent years."),
+  br(),
+  textInput(inputId = "user_state",
+            label = "Which state do you live in?"),
+  textOutput("results"),
+  tableOutput("table")
+)
+
 server_page4 <- function(input, output, session) {
   storm_data <- reactive({
     just_storms <- df[is.na(df$Subgroup) == TRUE, ]
@@ -136,16 +183,37 @@ server_page4 <- function(input, output, session) {
   })
 }
 
+
+
+
+ui_page5 <- fluidPage(
+  titlePanel("About Page"),
+  sidebarLayout(
+    sidebarPanel(
+      # Add sidebar content for Page 5
+    ),
+    mainPanel(
+      # Add main content for Page 5
+      h2("Welcome to Page 5"),
+      # Add additional UI components
+    )
+  )
+)
+
+
+
 # Combine UI and server functions for the entire application
 ui <- navbarPage(
   "Shiny App",
   tabPanel("Introduction", ui_page1),
-  tabPanel("Interactive Page 1", ui_page2),
+  tabPanel("Connecting Stormy Weather and Mental Health", ui_page2),
   tabPanel("Interactive Page 2", ui_page3),
-  tabPanel("Interactive Page 3", ui_page4)
+  tabPanel("Interactive Page 3", ui_page4),
+  tabPanel("About Page", ui_page5)
 )
 
 server <- function(input, output, session) {
+ server_page2(input,output,session)
   observe({
     if (!is.null(input$state_name) && input$state_name != "") {
       server_page3(input, output, session)
@@ -153,6 +221,7 @@ server <- function(input, output, session) {
   })
   server_page4(input, output, session)
 }
+
 
 # Run the Shiny App
 shinyApp(ui, server)
